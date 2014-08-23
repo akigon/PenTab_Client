@@ -6,6 +6,7 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
@@ -92,8 +93,12 @@ public class MainActivity extends ActionBarActivity {
 		// as you specify a parent activity in AndroidManifest.xml.
 		int id = item.getItemId();
 		if (id == R.id.action_settings) {
+			// 設定画面の呼び出し
+			Intent nextActivity = new Intent();
+			nextActivity.setClassName("com.akigon.pentab_android", "com.akigon.pentab_android.SettingsActivity");
+			
+            startActivity(nextActivity);
 			return true;
-
 		}
 		return super.onOptionsItemSelected(item);
 

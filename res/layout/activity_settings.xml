@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+    <PreferenceCategory android:title="接続設定">
+    	<EditTextPreference
+    	    android:key="setting_ip"
+            android:title="IPアドレス"
+            android:maxLength="15"
+            android:dialogTitle="IPアドレス"
+            android:defaultValue="127.0.0.1"
+        />
+    	<EditTextPreference
+    	    android:key="setting_port"
+            android:title="ポート"
+            android:dialogTitle="ポート"
+            android:defaultValue="12345"
+        />
+    	</PreferenceCategory>
+
+    <PreferenceCategory android:title="筆圧設定">
+        <CheckBoxPreference
+            android:key="setting_pleasure"
+            android:title="筆圧を利用"
+            android:summaryOn="ON"
+            android:summaryOff="OFF"
+        />
+    </PreferenceCategory>
+
+</PreferenceScreen>
