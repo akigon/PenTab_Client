@@ -22,8 +22,11 @@ public class MainActivity extends ActionBarActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		MainView v = new MainView(this);
-		setContentView(v);
+		setContentView(R.layout.activity_main);
+		
+		
+		
+		
 
 		new Thread(new Runnable() {
 
@@ -51,7 +54,7 @@ public class MainActivity extends ActionBarActivity {
 			}
 		}).start();
 
-
+		MainView v = (MainView)findViewById(R.id.mainView1);
 		v.setListener(new DrawEventListener() {
 
 			@Override
