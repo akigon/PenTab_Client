@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.akigon.pentab_android.SettingsActivity" >
+
+    <PreferenceCategory android:title="@string/settings_connect" >
+        <EditTextPreference
+            android:defaultValue="127.0.0.1"
+            android:dialogTitle="IPアドレス"
+            android:key="setting_ip"
+            android:maxLength="15"
+            android:title="@string/settings_ip" />
+
+        <EditTextPreference
+            android:defaultValue="12345"
+            android:dialogTitle="@string/settings_port"
+            android:key="setting_port"
+            android:title="@string/settings_port" />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/settings_pleasure" >
+
+        <CheckBoxPreference
+            android:key="setting_pleasure"
+            android:summaryOff="OFF"
+            android:summaryOn="ON"
+            android:title="@string/settings_pleasure_use" />
+    </PreferenceCategory>
+
+</PreferenceScreen>
