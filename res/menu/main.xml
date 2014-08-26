@@ -9,9 +9,9 @@
         android:title="@string/action_settings"
         app:showAsAction="never"/>
     <item
-        android:id="@+id/action_settings_check"
+        android:id="@+id/action_connect"
         android:orderInCategory="100"
-        android:title="チェック"
+        android:title="@string/action_connect"
         app:showAsAction="never"/>
 
 </menu>

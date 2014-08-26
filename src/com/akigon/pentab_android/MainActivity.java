@@ -1,26 +1,20 @@
 package com.akigon.pentab_android;
 
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.net.Socket;
-
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.akigon.pentab_android.MainView.DrawEventListener;
 
 public class MainActivity extends ActionBarActivity {
-	private static final String ADDRESS = "192.168.0.50";
-	private static final int PORT = 12345;
-	private Socket socket;
-	private PrintWriter out;
+
+	private SocketInterface sock;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -28,52 +22,57 @@ public class MainActivity extends ActionBarActivity {
 		setContentView(R.layout.activity_main);
 		MainView v = (MainView)findViewById(R.id.mainView1);
 
-		new Thread(new Runnable() {
+		connectToServer();
 
-			@Override
-			public void run() {
-				try {
-					// ソケット通信を開始
-					socket = new Socket(ADDRESS, PORT);
-					if(socket.isConnected()) {
-						String addr = String.valueOf(socket.getRemoteSocketAddress());
-    					System.out.println("connect success " + addr);
-					}else{
-						System.out.println("connect fail ");
-						return;
-					}
-					// ソケットの送信インターフェイスを作成
-					out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())));
-
-				} catch (IOException e) {
-					e.printStackTrace();
-
-				}
-
-			}
-		}).start();
-
-
+		if(v==null) System.out.println("Warning v=null");
 		v.setListener(new DrawEventListener() {
 			// 描画イベントでソケットにデータを送る
 			@Override
 			public void onDrawEvent(String downflag, int x, int y, int p) {
-				out.println(downflag + "," + String.valueOf(x) + "," + String.valueOf(y) + "," + String.valueOf(p));
-				out.flush();
-
+				sock.Send(downflag + "," + String.valueOf(x) + "," + String.valueOf(y) + "," + String.valueOf(p));
 			}
 		});
 
 	}
 
+	// 設定を利用して接続
+	private void connectToServer() {
+		final Handler h = new Handler();
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				// プリファレンスの取得
+				SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+				//プリファレンスからの読み出し
+				String setting_ip = sharedPreferences.getString("setting_ip", "127.0.0.1");
+				int setting_port = Integer.parseInt(sharedPreferences.getString("setting_port", "12345"));
+				boolean setting_pleasure = sharedPreferences.getBoolean("setting_pleasure", true);
+				System.out.println("setting_ip = " + setting_ip);
+				System.out.println("setting_port = " + setting_port);
+				System.out.println("setting_pleasure = " + setting_pleasure);
+
+				if(setting_port > 65535) setting_port = 65535;
+				if(setting_port < 0) setting_port = 0;
+				sock = new SocketInterface();
+				final boolean result = sock.Connect(setting_ip, setting_port);
+				h.post(new Runnable() {
+					@Override
+					public void run() {
+						if(result) {
+							Toast.makeText(getApplicationContext(), "サーバーに接続しました", Toast.LENGTH_LONG ).show();
+						} else {
+							Toast.makeText(getApplicationContext(), "サーバーに接続できません", Toast.LENGTH_LONG ).show();
+						}
+					}
+				});
+			}
+		}).start();
+	}
+
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		try {
-			socket.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		sock.Disconnect();
 	}
 
 	@Override
@@ -95,17 +94,9 @@ public class MainActivity extends ActionBarActivity {
 			Intent nextActivity = new Intent(this, SettingsActivity.class);
 			startActivity(nextActivity);
 			return true;
-		case R.id.action_settings_check:
-			// 設定チェック
-			// プリファレンスの取得
-			SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-			//プリファレンスからの読み出し
-			String setting_ip = sharedPreferences.getString("setting_ip", "127.0.0.1");
-			String setting_port = sharedPreferences.getString("setting_port", "12345");
-			boolean setting_pleasure = sharedPreferences.getBoolean("setting_pleasure", true);
-			System.out.println("setting_ip = " + setting_ip);
-			System.out.println("setting_port = " + setting_port);
-			System.out.println("setting_pleasure = " + setting_pleasure);
+		case R.id.action_connect:
+			// 接続
+			connectToServer();
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
